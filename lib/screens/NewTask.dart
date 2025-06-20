@@ -73,11 +73,7 @@ class _NewtaskState extends State<Newtask> {
                               Expanded(
                                 child: GestureDetector(
                                   onTap: () {
-                                    context.read<TaskBloc>().add(
-                                      OnSavingTaskEvent(
-                                        textEditingController.text,
-                                      ),
-                                    );
+                                    
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(

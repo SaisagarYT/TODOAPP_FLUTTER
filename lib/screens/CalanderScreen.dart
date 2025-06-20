@@ -128,7 +128,7 @@ class _CalanderscreenState extends State<Calanderscreen> {
                   SizedBox(height: 40),
                   Expanded(
                     child: ListView.builder(
-                      itemCount: state.tasks.length,
+                      itemCount: 1,
                       itemBuilder:
                           (context, index) => Row(
                             children: [
@@ -159,7 +159,7 @@ class _CalanderscreenState extends State<Calanderscreen> {
                                             SizedBox(width: 10),
                                             Expanded(
                                               child: Text(
-                                                state.tasks[index],
+                                                state.tasks[index].task,
                                                 maxLines: 5,
                                                 overflow: TextOverflow.ellipsis,
                                                 style: TextStyle(
