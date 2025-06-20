@@ -12,7 +12,8 @@ class Newtask extends StatefulWidget {
 }
 
 class _NewtaskState extends State<Newtask> {
-  TextEditingController textEditingController = TextEditingController();
+  TextEditingController textEditingController1 = TextEditingController();
+  TextEditingController textEditingController2 = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,79 +34,121 @@ class _NewtaskState extends State<Newtask> {
             width: double.maxFinite,
             child: BlocBuilder<TaskBloc, TaskState>(
               builder: (context, state) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextFormField(
-                      controller: textEditingController,
-                      maxLines: 5,
-                      autocorrect: true,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(borderSide: BorderSide.none),
-                        hintText: "Write a new task...",
-                      ),
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 15, right: 15),
-                      child: Column(
-                        children: [
-                          Row(
+                return BlocBuilder<TaskBloc, TaskState>(
+                  builder: (context, state) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20, right: 20),
+                          child: Column(
                             children: [
-                              TaskTag(name: "HEALTH"),
-                              TaskTag(name: "WORK"),
-                              TaskTag(name: "MENTAL HEALTH "),
+                              TextFormField(
+                                controller: textEditingController1,
+                                maxLines: 2,
+                                autocorrect: true,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  hintText: "Write a new task...",
+                                ),
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              SizedBox(height: 20),
+                              TextFormField(
+                                controller: textEditingController2,
+                                maxLines: 5,
+                                autocorrect: true,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  hintText: "Write your description...",
+                                ),
+                                style: TextStyle(fontSize: 16),
+                              ),
                             ],
                           ),
-                          SizedBox(height: 15),
-                          Row(
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 15, right: 15),
+                          child: Column(
                             children: [
-                              Container(
-                                width: 55,
-                                height: 55,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade300,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Icon(Icons.timelapse),
+                              Row(
+                                children: [
+                                  TaskTag(name: "HEALTH"),
+                                  TaskTag(name: "WORK"),
+                                  TaskTag(name: "MENTAL HEALTH "),
+                                ],
                               ),
-                              SizedBox(width: 10),
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => Calanderscreen(),
-                                      ),
-                                    );
-                                  },
-                                  child: Container(
+                              SizedBox(height: 15),
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 55,
                                     height: 55,
                                     decoration: BoxDecoration(
+                                      color: Colors.grey.shade300,
                                       borderRadius: BorderRadius.circular(10),
-                                      color: Colors.black87,
                                     ),
-                                    child: Center(
-                                      child: Text(
-                                        "Save",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
+                                    child: Icon(Icons.timelapse),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Expanded(
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => Calanderscreen(),
+                                          ),
+                                        );
+
+                                        context.read<TaskBloc>().add(
+                                          AddDetailsToServerEvent(
+                                            task: textEditingController1.text,
+                                            description:
+                                                textEditingController2.text,
+                                            tab: "",
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        height: 55,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                          color: Colors.black87,
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            "Save",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
+                                ],
                               ),
+                              SizedBox(height: 40),
                             ],
                           ),
-                          SizedBox(height: 40),
-                        ],
-                      ),
-                    ),
-                  ],
+                        ),
+                      ],
+                    );
+                  },
                 );
               },
             ),

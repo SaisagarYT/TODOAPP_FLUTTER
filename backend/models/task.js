@@ -6,12 +6,15 @@ const taskSchema = mongoose.Schema({
         required:true,
     },
     date:{
-        type:String,
-        required:true
+        type:Date,
     },
     description:{
         type:String,
     },
+    tab:{
+        type:String,
+        default:"others"
+    }
 },{timestamps:true})
 
 const User = mongoose.model('Task',taskSchema);

@@ -5,19 +5,27 @@ class Task {
   final String task;
   final DateTime date;
   final String description;
+  final String tab;
 
-  Task({required this.id, required this.date, required this.description, required this.task});
+  Task({
+    required this.id,
+    required this.date,
+    required this.description,
+    required this.task,
+    required this.tab,
+  });
 
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
-      id:json['_id'],
+      id: json['_id'],
       task: json['task'],
-      date: DateTime.parse(json['date']),
+      date: DateTime.parse(json['date']).toLocal(),
       description: json['description'],
+      tab: json['tab'],
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'id':id,'task': task, 'date': date, 'description': description};
+    return {'task': task, 'description': description, 'tab': tab};
   }
 }

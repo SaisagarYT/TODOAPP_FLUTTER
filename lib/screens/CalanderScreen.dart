@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_todo_application_6/screens/Homepage.dart';
 import 'package:flutter_todo_application_6/screens/NewTask.dart';
 import 'package:flutter_todo_application_6/screens/bloc/task_bloc.dart';
 import 'package:intl/intl.dart';
@@ -19,6 +20,8 @@ class _CalanderscreenState extends State<Calanderscreen> {
     context.read<TaskBloc>().add(TaskHomepageTaskDisplayEvent());
   }
 
+  int index = 0;
+
   DateTime selectedDate = DateTime.now();
   bool isSelected(DateTime a, DateTime b) {
     return (a.year == b.year && b.month == a.month && a.day == b.day);
@@ -26,7 +29,9 @@ class _CalanderscreenState extends State<Calanderscreen> {
 
   int date = 0;
   List<DateTime> dates = List.generate(365, (index) {
-    return DateTime.now().add(Duration(days: index));
+    DateTime now = DateTime.now();
+    DateTime startOfYear = DateTime(now.year, 1, 1);
+    return startOfYear.add(Duration(days: index));
   });
   @override
   Widget build(BuildContext context) {
@@ -37,6 +42,12 @@ class _CalanderscreenState extends State<Calanderscreen> {
         child: BlocBuilder<TaskBloc, TaskState>(
           builder: (context, state) {
             if (state is HomepageInitialDisplayState) {
+              final filteredTasks =
+                  state.tasks.where((element) {
+                    return element.date.year == selectedDate.year &&
+                        element.date.month == selectedDate.month &&
+                        element.date.day == selectedDate.day;
+                  }).toList();
               return Column(
                 children: [
                   Row(
@@ -128,62 +139,61 @@ class _CalanderscreenState extends State<Calanderscreen> {
                   SizedBox(height: 40),
                   Expanded(
                     child: ListView.builder(
-                      itemCount: 1,
-                      itemBuilder:
-                          (context, index) => Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  margin: EdgeInsets.only(bottom: 10),
-                                  padding: EdgeInsets.only(
-                                    left: 10,
-                                    top: 20,
-                                    bottom: 40,
-                                    right: 20,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.deepPurple[100],
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.circle,
-                                              color: Colors.deepPurple,
-                                            ),
-                                            SizedBox(width: 10),
-                                            Expanded(
-                                              child: Text(
-                                                state.tasks[index].task,
-                                                maxLines: 5,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
-                                                ),
+                      itemCount: filteredTasks.length,
+                      itemBuilder: (context, index) {
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                margin: EdgeInsets.only(bottom: 10),
+                                padding: EdgeInsets.only(
+                                  left: 10,
+                                  top: 20,
+                                  bottom: 40,
+                                  right: 20,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.deepPurple[100],
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.circle,
+                                            color: Colors.deepPurple,
+                                          ),
+                                          SizedBox(width: 10),
+                                          Expanded(
+                                            child: Text(
+                                              filteredTasks[index].task,
+                                              maxLines: 5,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
                                               ),
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
-                                      Text(
-                                        DateTime.now()
-                                            .toIso8601String()
-                                            .substring(11, 16),
-                                        style: TextStyle(
-                                          color: Colors.blueGrey,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                    Text(
+                                      state.tasks[index].date
+                                          .toString()
+                                          .substring(11, 16),
+                                      style: TextStyle(color: Colors.blueGrey),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -202,6 +212,39 @@ class _CalanderscreenState extends State<Calanderscreen> {
         },
         backgroundColor: Colors.black87,
         child: Icon(Icons.add, size: 40, color: Colors.white),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        elevation: 0,
+        unselectedItemColor: Colors.black,
+        selectedIconTheme: IconThemeData(size: 30),
+        selectedItemColor: Colors.grey,
+        onTap: (value) {
+          setState(() {
+            index = value;
+          });
+          switch (index) {
+            case 0:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => Homepage()),
+              );
+              break;
+            case 1:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => Calanderscreen()),
+              );
+              break;
+          }
+        },
+        currentIndex: index,
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month),
+            label: "Calander",
+          ),
+        ],
       ),
     );
   }

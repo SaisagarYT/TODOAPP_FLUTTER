@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_todo_application_6/screens/CalanderScreen.dart';
+import 'package:flutter_todo_application_6/screens/Homepage.dart';
 import 'package:flutter_todo_application_6/screens/NewTask.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_todo_application_6/screens/bloc/task_bloc.dart';
@@ -19,8 +20,11 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
+          inputDecorationTheme: InputDecorationTheme(
+            outlineBorder: BorderSide(color: Colors.black),
+          ),
         ),
-        home: Calanderscreen(),
+        home: Homepage(),
         debugShowCheckedModeBanner: false,
       ),
     );
