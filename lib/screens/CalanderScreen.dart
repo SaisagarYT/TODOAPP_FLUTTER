@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:flutter_todo_application_6/screens/Description.dart';
 import 'package:flutter_todo_application_6/screens/Homepage.dart';
 import 'package:flutter_todo_application_6/screens/NewTask.dart';
 import 'package:flutter_todo_application_6/screens/bloc/task_bloc.dart';
@@ -18,10 +18,15 @@ class _CalanderscreenState extends State<Calanderscreen> {
   void initState() {
     super.initState();
     context.read<TaskBloc>().add(TaskHomepageTaskDisplayEvent());
+    scrollController.animateTo(
+      (65 + 10) * date.toDouble(),
+      duration: Duration(microseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   int index = 0;
-
+  ScrollController scrollController = ScrollController();
   DateTime selectedDate = DateTime.now();
   bool isSelected(DateTime a, DateTime b) {
     return (a.year == b.year && b.month == a.month && a.day == b.day);
@@ -41,7 +46,9 @@ class _CalanderscreenState extends State<Calanderscreen> {
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: BlocBuilder<TaskBloc, TaskState>(
           builder: (context, state) {
-            if (state is HomepageInitialDisplayState) {
+            if (state is HomepageLoadingIndicatorState) {
+              return Scaffold(body: Center(child: CircularProgressIndicator()));
+            } else if (state is HomepageInitialDisplayState) {
               final filteredTasks =
                   state.tasks.where((element) {
                     return element.date.year == selectedDate.year &&
@@ -88,6 +95,7 @@ class _CalanderscreenState extends State<Calanderscreen> {
                   SizedBox(
                     height: 80,
                     child: ListView.builder(
+                      controller: scrollController,
                       scrollDirection: Axis.horizontal,
                       itemCount: dates.length,
                       itemBuilder: (value, index) {
@@ -141,57 +149,91 @@ class _CalanderscreenState extends State<Calanderscreen> {
                     child: ListView.builder(
                       itemCount: filteredTasks.length,
                       itemBuilder: (context, index) {
-                        return Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                margin: EdgeInsets.only(bottom: 10),
-                                padding: EdgeInsets.only(
-                                  left: 10,
-                                  top: 20,
-                                  bottom: 40,
-                                  right: 20,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.deepPurple[100],
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.circle,
-                                            color: Colors.deepPurple,
-                                          ),
-                                          SizedBox(width: 10),
-                                          Expanded(
-                                            child: Text(
-                                              filteredTasks[index].task,
-                                              maxLines: 5,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Description(),
+                              ),
+                            );
+                            context.read<TaskBloc>().add(
+                              OnClickTaskDescriptionDisplayEvent(
+                                taskId: filteredTasks[index].id,
+                              ),
+                            );
+                          },
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  margin: EdgeInsets.only(bottom: 10),
+                                  padding: EdgeInsets.only(
+                                    left: 10,
+                                    top: 20,
+                                    bottom: 40,
+                                    right: 20,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.symmetric(
+                                      vertical: BorderSide(width: 5),
+                                      horizontal: BorderSide(width: 1),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            Stack(
+                                              children: [
+                                                Icon(
+                                                  Icons.circle,
+                                                  color: Colors.black,
+                                                  size: 30,
+                                                ),
+                                                Positioned(
+                                                  top: 2.7,
+                                                  left: 3,
+                                                  child: Icon(
+                                                    Icons.circle,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(width: 10),
+                                            Expanded(
+                                              child: Text(
+                                                filteredTasks[index].task,
+                                                maxLines: 5,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                      state.tasks[index].date
-                                          .toString()
-                                          .substring(11, 16),
-                                      style: TextStyle(color: Colors.blueGrey),
-                                    ),
-                                  ],
+                                      Text(
+                                        filteredTasks[index].date
+                                            .toString()
+                                            .substring(11, 16),
+                                        style: TextStyle(
+                                          color: Colors.blueGrey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         );
                       },
                     ),
